@@ -2,7 +2,7 @@ class StripeMock {
   publishableKey;
   options;
 
-  constructor(publishableKey, options) {
+  constructor(publishableKey: string, options: Record<string, unknown>) {
     this.publishableKey = publishableKey;
     this.options = options;
   }
@@ -12,12 +12,18 @@ class StripeMock {
       create() {
         return {
           mount() {},
-          on(eventName, fn) {
+          on(
+            eventName: string,
+            fn: (options: Record<string, unknown>) => void
+          ) {
             this._eventListeners[eventName] = fn;
           },
           unmount() {},
-          _eventListeners: {},
-          _emitEvent(eventName, options) {
+          _eventListeners: {} as Record<
+            string,
+            (options: Record<string, unknown>) => void
+          >,
+          _emitEvent(eventName: string, options: Record<string, unknown>) {
             this._eventListeners[eventName]?.(options);
           },
         };

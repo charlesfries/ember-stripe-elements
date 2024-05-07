@@ -7,9 +7,9 @@ import RSVP from 'rsvp';
  * already existing promise.
  */
 
-let loadedScripts = {};
+let loadedScripts: Record<string, RSVP.Promise<void>> = {};
 
-export default function loadScript(url) {
+export default function loadScript(url: string): RSVP.Promise<void> {
   let promise = loadedScripts[url];
 
   if (!promise) {
@@ -40,7 +40,7 @@ export default function loadScript(url) {
       element.src = url;
 
       let firstScript = document.getElementsByTagName('script')[0];
-      firstScript.parentNode.insertBefore(element, firstScript);
+      firstScript?.parentNode?.insertBefore(element, firstScript);
     });
 
     loadedScripts[url] = promise;

@@ -6,10 +6,19 @@ import loadScript from '@adopted-ember-addons/ember-stripe-elements/utils/load-s
 import { A } from '@ember/array';
 import { assert } from '@ember/debug';
 
+import type { Stripe as _Stripe, StripeElement } from '@stripe/stripe-js';
+
+interface Config {
+  lazyLoad?: boolean;
+  mock?: boolean;
+  publishableKey?: string;
+  stripeOptions?: Record<string, unknown>;
+}
+
 export default class StripeService extends Service {
-  _config = null;
+  _config: Config | null = null;
   _didLoad = false;
-  _stripe = null;
+  _stripe: _Stripe | null = null;
   _elements = A();
 
   constructor() {
@@ -24,32 +33,32 @@ export default class StripeService extends Service {
   }
 
   get lazyLoad() {
-    return Boolean(this._config.lazyLoad);
+    return Boolean(this._config!.lazyLoad);
   }
 
   get mock() {
-    return Boolean(this._config.mock);
+    return Boolean(this._config!.mock);
   }
 
   get stripeOptions() {
-    return this._config.stripeOptions || {};
+    return this._config!.stripeOptions || {};
   }
 
   set stripeOptions(value) {
-    this._config.stripeOptions = value;
+    this._config!.stripeOptions = value;
   }
 
   get publishableKey() {
-    return this._config.publishableKey;
+    return this._config!.publishableKey;
   }
 
   set publishableKey(key) {
-    this._config.publishableKey = key;
+    this._config!.publishableKey = key;
   }
 
-  get instance() {
+  get instance(): _Stripe {
     assert('Stripe must be loaded.', Boolean(this._stripe));
-    return this._stripe;
+    return this._stripe as _Stripe;
   }
 
   load(publishableKey = null, stripeOptions = null) {
@@ -87,11 +96,11 @@ export default class StripeService extends Service {
     }
   }
 
-  addStripeElement(element) {
+  addStripeElement(element: StripeElement) {
     this._elements.pushObject(element);
   }
 
-  removeStripeElement(element) {
+  removeStripeElement(element: StripeElement) {
     this._elements.removeObject(element);
   }
 

@@ -1,6 +1,21 @@
 {
+  "extends": "@tsconfig/ember/tsconfig.json",
   "compilerOptions": {
-      "experimentalDecorators": true,
-      "allowJs": true
+    "experimentalDecorators": true,
+    "allowJs": true,
+
+    // The combination of `baseUrl` with `paths` allows Ember's classic package
+    // layout, which is not resolvable with the Node resolution algorithm, to
+    // work with TypeScript.
+    "baseUrl": ".",
+    "paths": {
+      "dummy/tests/*": ["tests/*"],
+      "dummy/*": ["tests/dummy/app/*", "app/*"],
+      "@adopted-ember-addons/ember-stripe-elements": ["addon"],
+      "@adopted-ember-addons/ember-stripe-elements/*": ["addon/*"],
+      "@adopted-ember-addons/ember-stripe-elements/test-support": ["addon-test-support"],
+      "@adopted-ember-addons/ember-stripe-elements/test-support/*": ["addon-test-support/*"],
+      "*": ["types/*"]
+    }
   }
 }

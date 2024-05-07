@@ -4,6 +4,8 @@ import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { assert } from '@ember/debug';
 
+import type StripeService from '@adopted-ember-addons/ember-stripe-elements/services/stripev3';
+
 let style = {
   style: {
     base: {
@@ -23,7 +25,7 @@ let style = {
 };
 
 export default class Application extends Controller {
-  @service('stripev3') stripe;
+  @service('stripev3') declare stripe: StripeService;
 
   @tracked token = null;
   @tracked cardOptions = null;

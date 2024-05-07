@@ -3,12 +3,32 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 
-export default class StripeElement extends Component {
-  @tracked stripeElement = null;
-  @tracked type = null; // Set in components that extend from `stripe-element`
-  @tracked _stripeError = null;
+import type StripeService from '../services/stripev3';
+import type {
+  StripeElements,
+  StripeElement as _StripeElement,
+  StripeAddressElementOptions,
+} from '@stripe/stripe-js';
 
-  @service stripev3;
+interface StripeElementSignature {
+  autofocus?: boolean;
+  options?: Partial<StripeAddressElementOptions>;
+  stripeError: unknown;
+  _elements: StripeElements;
+  onReady?: (cardElement: unknown) => void;
+  onBlur?: (cardElement: unknown) => void;
+  onChange?: (cardElement: unknown) => void;
+  onFocus?: (cardElement: unknown) => void;
+  onComplete?: (cardElement: unknown) => void;
+  onError?: (stripeError: Error) => void;
+}
+
+export default class StripeElement extends Component<StripeElementSignature> {
+  @tracked stripeElement: _StripeElement | null = null;
+  @tracked type: string | null = null; // Set in components that extend from `stripe-element`
+  @tracked _stripeError: unknown | null = null;
+
+  @service declare stripev3: StripeService;
 
   get autofocus() {
     return this.args.autofocus;
@@ -35,18 +55,18 @@ export default class StripeElement extends Component {
   }
 
   @action
-  registerListeners(element) {
+  registerListeners(element: HTMLElement) {
     this.mountElement(element);
     this.setEventListeners();
     this.focusElement(element);
   }
 
-  mountElement(element) {
+  mountElement(element: HTMLElement) {
     // Fetch user options
     let options = this.args.options;
 
     // `stripeElement` instead of `element` to distinguish from `element`
-    let stripeElement = this.elements.create(this.type, options);
+    let stripeElement = this.elements.create(this.type!, options);
 
     // Mount the Stripe Element onto the mount point
     stripeElement.mount(element);
@@ -56,12 +76,12 @@ export default class StripeElement extends Component {
     this.stripev3.addStripeElement(stripeElement);
   }
 
-  focusElement(element) {
+  focusElement(element: HTMLElement) {
     // Fetch autofocus, set by user
     let iframe = element.querySelector('iframe');
     if (this.autofocus && iframe) {
       iframe.onload = () => {
-        this.stripeElement.focus();
+        this.stripeElement!.focus();
       };
     }
   }
@@ -69,19 +89,19 @@ export default class StripeElement extends Component {
   setEventListeners() {
     let { stripeElement } = this;
 
-    stripeElement.on('ready', (event) => {
+    stripeElement!.on('ready', (event) => {
       this._invokeAction('onReady', stripeElement, event);
     });
 
-    stripeElement.on('blur', (event) => {
+    stripeElement!.on('blur', (event) => {
       this._invokeAction('onBlur', stripeElement, event);
     });
 
-    stripeElement.on('focus', (event) => {
+    stripeElement!.on('focus', (event) => {
       this._invokeAction('onFocus', stripeElement, event);
     });
 
-    stripeElement.on('change', (...args) => {
+    stripeElement!.on('change', (...args) => {
       if (this.isDestroying || this.isDestroyed) {
         return;
       }
@@ -99,7 +119,7 @@ export default class StripeElement extends Component {
     });
   }
 
-  _invokeAction(method, ...args) {
+  _invokeAction(method: keyof StripeElementSignature, ...args) {
     if (this.isDestroying || this.isDestroyed) {
       return;
     }
@@ -112,12 +132,12 @@ export default class StripeElement extends Component {
   @action
   onOptionsChange() {
     let options = this.options;
-    this.stripeElement.update(options);
+    this.stripeElement!.update(options);
   }
 
   willDestroy() {
-    this.stripeElement.unmount();
-    this.stripev3.removeStripeElement(this.stripeElement);
+    this.stripeElement!.unmount();
+    this.stripev3.removeStripeElement(this.stripeElement!);
     super.willDestroy(...arguments);
   }
 }
