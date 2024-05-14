@@ -123,7 +123,7 @@ export default class StripeElement extends Component<StripeElementSignature> {
     });
   }
 
-  _invokeAction(method: keyof StripeElementSignature, ...args) {
+  _invokeAction(method: keyof StripeElementSignature, ...args: unknown[]) {
     if (this.isDestroying || this.isDestroyed) {
       return;
     }
