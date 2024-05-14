@@ -6,25 +6,29 @@ import { inject as service } from '@ember/service';
 import type StripeService from '../services/stripev3';
 import type {
   StripeElements,
-  StripeElement as _StripeElement,
+  StripeAddressElement,
   StripeAddressElementOptions,
+  StripeAddressElementChangeEvent,
 } from '@stripe/stripe-js';
 
 interface StripeElementSignature {
   autofocus?: boolean;
-  options?: Partial<StripeAddressElementOptions>;
+  options?: StripeAddressElementOptions;
   stripeError: unknown;
   _elements: StripeElements;
   onReady?: (cardElement: unknown) => void;
   onBlur?: (cardElement: unknown) => void;
-  onChange?: (cardElement: unknown) => void;
+  onChange?: (
+    cardElement: unknown,
+    event: StripeAddressElementChangeEvent
+  ) => void;
   onFocus?: (cardElement: unknown) => void;
   onComplete?: (cardElement: unknown) => void;
   onError?: (stripeError: Error) => void;
 }
 
 export default class StripeElement extends Component<StripeElementSignature> {
-  @tracked stripeElement: _StripeElement | null = null;
+  @tracked stripeElement: StripeAddressElement | null = null;
   @tracked type: string | null = null; // Set in components that extend from `stripe-element`
   @tracked _stripeError: unknown | null = null;
 
@@ -66,7 +70,7 @@ export default class StripeElement extends Component<StripeElementSignature> {
     let options = this.args.options;
 
     // `stripeElement` instead of `element` to distinguish from `element`
-    let stripeElement = this.elements.create(this.type!, options);
+    let stripeElement = this.elements.create(this.type as 'address', options!);
 
     // Mount the Stripe Element onto the mount point
     stripeElement.mount(element);

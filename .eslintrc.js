@@ -2,19 +2,11 @@
 
 module.exports = {
   root: true,
-  parser: '@babel/eslint-parser',
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 2018,
-    sourceType: 'module',
-    ecmaFeatures: {
-      allowImportAndExportEverywhere: true,
-    },
-    requireConfigFile: false,
-    babelOptions: {
-      plugins: [['@babel/plugin-proposal-decorators', { legacy: true }]],
-    },
+    ecmaVersion: 'latest',
   },
-  plugins: ['ember'],
+  plugins: ['ember', '@typescript-eslint'],
   extends: [
     'eslint:recommended',
     'plugin:ember/recommended',
