@@ -23,10 +23,6 @@ export default class StripeService extends Service {
     }
   }
 
-  get lazyLoad() {
-    return Boolean(this._config.lazyLoad);
-  }
-
   get mock() {
     return Boolean(this._config.mock);
   }
